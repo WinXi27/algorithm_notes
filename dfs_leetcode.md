@@ -423,36 +423,158 @@ public:
     }
 };
 ```
-# 
+# 130.被围绕的区域
+## dfs解法
+```cpp
+class Solution {
+public:
+    int r=0;
+    int c=0;
+    int d[5]={0,-1,0,1,0};
+    void dfs(vector<vector<char>>&board,int i,int j){
+        if(i<0||j<0||i>=r||j>=c||board[i][j]!='O')return ;
+        board[i][j]='A';
+        for(int k=0;k<4;++k){
+            int x=i+d[k];
+            int y=j+d[k+1];
+            dfs(board,x,y);
+        }return ;
+    }
+    void solve(vector<vector<char>>& board) {
+        r=board.size();
+        c=board[0].size();
+        for(int i=0;i<r;++i){
+            for(int j=0;j<c;++j){
+                if(i==0||j==0||i==r-1||j==c-1){
+                    if(board[i][j]=='O')
+                        dfs(board,i,j);
+                }
+            }
+        }
+        for(int i=0;i<r;++i){
+            for(int j=0;j<c;++j){
+                if(board[i][j]=='O')board[i][j]='X';
+                else if(board[i][j]=='A')board[i][j]='O';
+            }
+        }
+        return ;    
+    }
+};
+```
+# 133.克隆图()
 ```cpp
 
+```
+# 144.二叉树的前序遍历
+```cpp
+class Solution {
+public:
+    vector<int> preorderTraversal(TreeNode* root) {
+        if(root==nullptr)return {};
+        stack<TreeNode*>st;
+        st.push(root);
+        vector<int>ans;
+        while(!st.empty() ){
+            TreeNode*cur=st.top();
+            st.pop();
+            ans.push_back(cur->val);
+            if(cur->right)st.push(cur->right);
+            if(cur->left)st.push(cur->left);
+        }
+        return ans;
+    }
+};
+```
+# 145.二叉树的后序遍历
+```cpp
+class Solution {
+public:
+    //后序遍历: 左 右 中
+    //先序遍历: 中 左 右--->翻转--->中 右 左--->
+    vector<int> postorderTraversal(TreeNode* root) {
+        if(root==nullptr)return {};
+        vector<int>ans;
+        stack<TreeNode*>st;
+        stack<int>temp;
+        st.push(root);
+        while(!st.empty() ){
+            TreeNode*cur=st.top();
+            st.pop();
+            temp.push(cur->val);
+            if(cur->left)st.push(cur->left);
+            if(cur->right)st.push(cur->right);
+        }
+        while(!temp.empty() ){
+            ans.push_back(temp.top() );
+            temp.pop();
+        }
+        return ans;
+    }
+};
+```
+# 156.上下翻转二叉树()
+```cpp
+
+```
+# 199.二叉树的右视图
+```cpp
+class Solution {
+public:
+    vector<int> rightSideView(TreeNode* root) {
+        if(root==nullptr)return {};
+        queue<TreeNode*>que;
+        que.push(root);
+        vector<int>ans;
+        while(!que.empty() ){
+            int size=que.size();
+            while(size--){
+                TreeNode*cur=que.front();
+                que.pop();
+                if(size==0){
+                    ans.push_back(cur->val);
+                }
+                if(cur->left)que.push(cur->left);
+                if(cur->right)que.push(cur->right);
+            }
+        }
+        return ans;
+    }
+};
+```
+# 200.岛屿数量
+```cpp
+class Solution {
+public:
+    int r=0;
+    int c=0;
+    int d[5]={0,-1,0,1,0};
+    void dfs(vector<vector<char>>&grid,int i,int j){
+        if(i<0||j<0||i>=r||j>=c||grid[i][j]!='1')return ;
+        grid[i][j]='0';
+        for(int k=0;k<4;++k){
+            int x=i+d[k];
+            int y=j+d[k+1];
+            dfs(grid,x,y);
+        }
+        return ;
+    }
+    int numIslands(vector<vector<char>>& grid) {
+        r=grid.size();
+        c=grid[0].size();
+        int cnt=0;
+        for(int i=0;i<r;++i){
+            for(int j=0;j<c;++j){
+                if(grid[i][j]=='1'){
+                    cnt++;
+                    dfs(grid,i,j);
+                }
+            }
+        }    
+        return cnt;
+    }
+};
 ```
 # 
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
 ```cpp
 
 ```
