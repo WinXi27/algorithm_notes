@@ -574,264 +574,355 @@ public:
     }
 };
 ```
+# 207.课程表
+```cpp
+class Solution {
+public:
+    unordered_map<int,vector<int>>graph;
+    bool canFinish(int n, vector<vector<int>>& pre) {
+        //[0,n-1]
+        vector<int>in(n,0);
+        for(auto &it:pre){
+            int from=it[1];
+            int to=it[0];
+            graph[from].push_back(to);
+            in[to]++;
+        }
+        queue<int>que;
+        int ans=0;
+        for(int i=0;i<n;++i)if(in[i]==0)que.push(i);
+        while(!que.empty() ){
+            int cur=que.front();
+            que.pop();
+            ans++;
+            for(auto &it:graph[cur]){
+                in[it]--;
+                if(in[it]==0)que.push(it);
+            }
+        }
+        return ans==n;
+    }
+};
+```
+# 210.课程表 II
+```cpp
+class Solution {
+public:
+    unordered_map<int,vector<int>>graph;
+    vector<int>in;
+    vector<int> findOrder(int n, vector<vector<int>>& pre) {
+        vector<int>ans;
+        in.resize(n,0);
+        for(auto &it:pre){
+            int from=it[1];
+            int to=it[0];
+            graph[from].push_back(to);
+            in[to]++;
+        }
+        queue<int>que;
+        for(int i=0;i<n;++i)if(in[i]==0)que.push(i);
+        while(!que.empty() ){
+            int cur=que.front();
+            que.pop();
+            ans.push_back(cur);
+            for(auto&it:graph[cur]){
+                in[it]--;
+                if(in[it]==0)que.push(it);
+            }
+        }
+        return ans.size()==n?ans:vector<int>{};
+    }
+};
+```
+# 211.添加与搜索单词 - 数据结构设计()
+```cpp
+
+```
+# 226.翻转二叉树
+## dfs解法1
+```cpp
+class Solution {
+public:
+    void dfs(TreeNode*root){
+        if(root==nullptr)return ;
+        dfs(root->left);
+        dfs(root->right);
+        TreeNode*temp=root->left;
+        root->left=root->right;
+        root->right=temp;
+        return ;
+    }
+    TreeNode* invertTree(TreeNode* root) {
+        dfs(root);
+        return root;
+    }
+};
+```
+## dfs解法2
+```cpp
+class Solution {
+public:
+    void dfs(TreeNode*root){
+        if(root==nullptr)return ;
+        TreeNode*temp=root->left;
+        root->left=root->right;
+        root->right=temp;
+        dfs(root->left);
+        dfs(root->right);
+        return ;
+    }
+    TreeNode* invertTree(TreeNode* root) {
+        dfs(root);
+        return root;
+    }
+};
+```
+# 230.二叉搜索树中第 K 小的元素
+## dfs解法1
+```cpp
+class Solution {
+public:
+    unordered_map<TreeNode*,int>cnt;
+    int dfs(TreeNode*root){
+        if(root==nullptr)return 0;
+        int ans=1+dfs(root->left)+dfs(root->right);
+        cnt[root]=ans;
+        return ans;
+    }
+    int kthSmallest(TreeNode* root, int k) {
+        dfs(root);
+        cnt[nullptr]=0;
+        while(root){
+            int left_cnt=dfs(root->left);
+            int right_cnt=dfs(root->right);
+            //[left_cnt][][right_cnt];
+            if(left_cnt+1==k)return root->val;
+            else if(left_cnt>=k){
+                root=root->left;
+            }else{
+                root=root->right;
+                k-=(left_cnt+1);
+            }
+        }
+        return 0;
+    }
+};
+```
+## dfs解法2
+```cpp
+class Solution {
+public:
+    vector<int>ans;
+    void dfs(TreeNode*root){
+        if(root==nullptr)return ;
+        dfs(root->left);
+        ans.push_back(root->val);
+        dfs(root->right);
+        return ;
+    }
+    int kthSmallest(TreeNode* root, int k) {
+        dfs(root);
+        return ans[k-1];
+    }
+};
+```
+## stack解法3
+```cpp
+class Solution {
+public:
+    int kthSmallest(TreeNode* root, int k) {
+        stack<TreeNode*>st;
+        int cnt=0;
+        while(root||!st.empty() ){
+            while(root){
+                st.push(root);
+                root=root->left;
+            }
+            TreeNode*cur=st.top();
+            st.pop();
+            cnt++;
+            if(cnt==k)return cur->val;
+            if(cur->right)root=cur->right;
+        }
+        return 0;
+    }
+};
+```
+# 235.二叉搜索树的最近公共祖先
+```cpp
+co
+```
+# 
+```cpp
+
+```
+# 
+```cpp
+
+```
+# 
+```cpp
+
+```
+# 
+```cpp
+
+```
+# 
+```cpp
+
+```
+# 
+```cpp
+
+```
 # 
 ```cpp
 
 ```
 
-# 79.单词搜索
+# 
+```cpp
+
+```
+# 
+```cpp
+
+```
+# 
+```cpp
+
+```
+# 
+```cpp
+
+```
+# 
+```cpp
+
+```
+# 
+```cpp
+
+```
+# 
+```cpp
+
+```
+# 
+```cpp
+
+```
+# 
+```cpp
+
+```
+# 
+```cpp
+
+```
+# 
+```cpp
+
+```
+# 
 ```cpp
 
 ```
 
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-# 79.单词搜索
+# 
 ```cpp
 
 ```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-# 79.单词搜索
-```cpp
-
-```
-
-
