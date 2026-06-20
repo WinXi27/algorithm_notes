@@ -1,6 +1,7 @@
-# 本文章解答leetCode的DFS(深度优先搜索)所有题目
-按照leetcode上的顺序排版
-保证代码都AC
+# 本文章解答leetCode的DFS(深度优先搜索)大部分题目
+基本按照leetcode上的顺序排版
+**保证代码都AC,先看目录**
+题目带()是还没写,之后会补上
 # 79.单词搜索
 ```cpp
 class Solution {
@@ -1179,58 +1180,187 @@ public:
     }
 };
 ```
-# 
+# 339.嵌套列表加权和()
 ```cpp
 
 ```
 
-# 
+# 341.扁平化嵌套列表迭代器()
 ```cpp
 
 ```
-# 
+# 364.嵌套列表加权和 II()
 ```cpp
 
 ```
-# 
+# 365.水壶问题()
 ```cpp
 
 ```
-# 
+# 366.寻找二叉树的叶子节点
+```cpp
+class Solution {
+public:
+    vector<vector<int>>ans;
+    vector<int>temp;
+    unordered_map<TreeNode*,int>mp;
+    unordered_map<int,vector<int>>arr;
+    int minn=INT_MAX;
+    int maxx=INT_MIN;
+    int dfs(TreeNode*root){
+        if(root==nullptr)return 0;
+        if(mp[root]!=0)return mp[root];
+        int left_height=dfs(root->left);
+        int right_height=dfs(root->right);
+        int ans=1+max(left_height,right_height);
+        mp[root]=ans;
+        arr[ans].push_back(root->val);
+        maxx=max(maxx,ans);
+        minn=min(minn,ans);
+        return ans;
+    }
+    vector<vector<int>> findLeaves(TreeNode* root) {
+        dfs(root);
+        for(int height=minn;height<=maxx;++height){
+            ans.push_back(arr[height]);
+        }
+        return ans;
+    }
+};
+```
+# 385.迷你语法分析器()
 ```cpp
 
 ```
-# 
+# 386.字典序排数()
 ```cpp
 
 ```
-# 
+# 388.文件的最长绝对路径()
 ```cpp
 
 ```
-# 
+# 399.除法求值()
 ```cpp
 
 ```
-# 
+# 404.左叶子之和
+## bfs解法
+```cpp
+class Solution {
+public:
+    int sumOfLeftLeaves(TreeNode* root) {
+        queue<TreeNode*>que;
+        queue<bool>flag;
+        int sum=0;
+        que.push(root);
+        flag.push(false);
+        while(!que.empty() ){
+            int size=que.size();
+            while(size--){
+                TreeNode*cur=que.front();
+                que.pop();
+                if(flag.front() )sum+=cur->val;
+                flag.pop();
+                if(cur->left){
+                    que.push(cur->left);
+                    if(!cur->left->left&&!cur->left->right){
+                        flag.push(true);
+                    }else flag.push(false);
+                }
+                if(cur->right){
+                    que.push(cur->right);
+                    flag.push(false);
+                }
+            }
+        }
+        return sum;
+    }
+};
+```
+## dfs解法
+```cpp
+class Solution {
+public:
+    int sum=0;
+    void dfs(TreeNode*root){
+        if(root==nullptr)return ;
+        dfs(root->left);
+        dfs(root->right);
+        if(root->left&&!root->left->left&&!root->left->right)
+            sum+=root->left->val;
+        return ;
+    }
+    int sumOfLeftLeaves(TreeNode* root) {
+        dfs(root);
+        return sum;
+    }
+};
+```
+# 417.太平洋大西洋水流问题()
 ```cpp
 
 ```
-# 
+# 419.棋盘上的战舰
 ```cpp
-
+class Solution {
+public:
+    int r = 0;
+    int c = 0;
+    void dfs(vector<vector<char>>&board,int i,int j){
+        for(int k=i+1;k<r&&board[k][j]=='X';++k)board[k][j]='.';
+        for(int k=j+1;k<c&&board[i][k]=='X';++k)board[i][k]='.';
+        board[i][j]='.';
+    }
+    int countBattleships(vector<vector<char>>& board) {
+        r = board.size();
+        c = board[0].size();
+        int cnt=0;
+        for (int i = 0; i < r; ++i) {
+            for (int j = 0; j < c; ++j) {
+                if (board[i][j] == 'X') {
+                    dfs(board,i,j);
+                    cnt++;
+                }
+            }
+        }
+        return cnt;
+    }
+};
 ```
-# 
+# 463.岛屿的周长
 ```cpp
-
-```
-# 
-```cpp
-
-```
-# 
-```cpp
-
+class Solution {
+public:
+    int r=0;
+    int c=0;
+    bool visit[105][105];
+    int d[5]={0,-1,0,1,0};
+    int dfs(vector<vector<int>>&grid,int i,int j){
+        if(i<0||j<0||i>=r||j>=c)return 1;
+        if(visit[i][j])return 0;
+        if(grid[i][j]!=1)return 1;
+        int ans=0;
+        visit[i][j]=true;
+        for(int k=0;k<4;++k){
+            int x=i+d[k];
+            int y=j+d[k+1];
+            ans+=dfs(grid,x,y);
+        }return ans;
+    }
+    int islandPerimeter(vector<vector<int>>& grid) {
+        r=grid.size();
+        c=grid[0].size();
+        for(int i=0;i<r;++i){
+            for(int j=0;j<c;++j){
+                if(grid[i][j]==1){
+                    return dfs(grid,i,j);
+                }
+            }
+        }    
+        return 0;
+    }
+};
 ```
 # 
 ```cpp
