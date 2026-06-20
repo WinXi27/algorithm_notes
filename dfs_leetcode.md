@@ -749,81 +749,435 @@ public:
 };
 ```
 # 235.二叉搜索树的最近公共祖先
+## dfs解法1
 ```cpp
-co
+class Solution {
+public:
+    TreeNode*dfs(TreeNode*root,TreeNode*p,TreeNode*q){
+        if(root==nullptr)return nullptr;
+        //root p q 
+        if(root->val<p->val&&root->val<q->val)return dfs(root->right,p,q);
+        //p q root
+        else if(root->val>q->val&&root->val>p->val)return dfs(root->left,p,q);
+        //p root q
+        return root;
+    }
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        return  dfs(root,p,q);
+    }
+};
 ```
-# 
+## dfs解法2
 ```cpp
-
+class Solution {
+public:
+    TreeNode*dfs(TreeNode*root,TreeNode*p,TreeNode*q){
+        if(root==nullptr)return nullptr;
+        //p q root
+        if(q->val<root->val)return dfs(root->left,p,q);
+        //root p q
+        if(root->val<p->val)return dfs(root->right,p,q);
+        return root;
+    }
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        if(p->val>q->val)swap(p,q);
+        return dfs(root,p,q);
+    }
+};
 ```
-# 
+# 236.二叉树的最近公共祖先
 ```cpp
-
+class Solution {
+public:
+    TreeNode*dfs(TreeNode*root,TreeNode*p,TreeNode*q){
+        if(root==nullptr)return nullptr;
+        if(root==p||root==q)return root;
+        TreeNode*left=dfs(root->left,p,q);
+        TreeNode*right=dfs(root->right,p,q);
+        if(left&&right)return root;
+        if(left||right)return left?left:right;
+        return nullptr;
+    }
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        return dfs(root,p,q);
+    }
+};
 ```
-# 
-```cpp
-
-```
-# 
-```cpp
-
-```
-# 
-```cpp
-
-```
-# 
-```cpp
-
-```
-# 
-```cpp
-
-```
-
-# 
-```cpp
-
-```
-# 
-```cpp
-
-```
-# 
-```cpp
-
-```
-# 
-```cpp
-
-```
-# 
-```cpp
-
-```
-# 
-```cpp
-
-```
-# 
+# 250.统计同值子树()
 ```cpp
 
 ```
-# 
+# 257.而擦函数的所有路径
+```cpp
+class Solution {
+public:
+    vector<string>ans;
+    string temp;
+    void dfs(TreeNode*root){
+        if(root==nullptr)return ;
+        temp+=("->"+to_string(root->val) );
+        if(!root->left&&!root->right){
+            ans.push_back(temp);
+        }
+        dfs(root->left);
+        dfs(root->right);
+        int k=2+to_string(root->val).size();
+        while(k--)temp.pop_back();
+        return ;
+    }
+    vector<string> binaryTreePaths(TreeNode* root) {
+        if(root==nullptr)return {};
+        if(!root->left&&!root->right){
+            return vector<string>{to_string(root->val)};
+        }
+        temp+=to_string(root->val);
+        dfs(root->left);
+        dfs(root->right);
+        temp.pop_back();
+        return ans;    
+    }
+};
+```
+# 261.以图判树
+```cpp
+class Solution {
+public:
+    int fa[2005];
+    int cnt=0;
+    void build(int n){
+        for(int i=0;i<n;++i)fa[i]=i;
+        cnt=n;
+    }
+    bool is_same(int n1,int n2){
+        return find(n1)==find(n2);
+    }
+    int find(int n){
+        queue<int>que;
+        while(fa[n]!=n){
+            que.push(n);
+            n=fa[n];
+        }
+        while(!que.empty() ){
+            fa[que.front()]=n;
+            que.pop();
+        }return n;
+    }
+    void union_ele(int n1,int n2){
+        int fa1=find(n1);
+        int fa2=find(n2);
+        if(fa1==fa2)return ;
+        fa[fa1]=fa2;
+        cnt--;
+    }
+    bool validTree(int n, vector<vector<int>>& edges) {
+        //[0,n-1]
+        build(n);
+        for(auto &it:edges){
+            int n1=it[0];
+            int n2=it[1];
+            if(is_same(n1,n2) )return false;
+            union_ele(n1,n2);
+        }
+        return cnt==1;
+    }
+};
+```
+# 269.火星词典
+## 这题都要被绕懵了,好多边界,哈哈哈
+```cpp
+class Solution {
+public:
+    unordered_map<char,vector<char>>graph;
+    unordered_map<char,int>in;
+    bool visit[26][26];
+    bool fun(string s1,string s2){
+        if(s1==s2)return true;
+        int i=0;
+        int j=0;
+        while(i<s1.size()&&j<s2.size() ){
+            if(s1[i]==s2[j])i++,j++;
+            else{
+                if(visit[s1[i]-'a'][s2[j]-'a']==false){
+                    graph[s1[i]].push_back(s2[j]);
+                    in[s2[j]]++;
+                    visit[s1[i]-'a'][s2[j]-'a']=true;
+                }
+                return true;
+            }
+        }
+        if(j==s2.size() )return false;
+        return true;
+    }
+    bool have[26];
+    string alienOrder(vector<string>& words) {
+        int cnt=0;
+        for(int i=0;i<words.size();++i){
+            for(char &c:words[i]){
+                if(have[c-'a']==false){
+                    cnt++;
+                    have[c-'a']=true;
+                }                
+            }
+            for(int j=i+1;j<words.size();++j){
+                if(fun(words[i],words[j])==false)
+                    return "";
+            }
+        }
+        queue<char>que;
+        for(char c='a';c<='z';++c){
+            if(have[c-'a']&&in[c]==0)que.push(c);
+        }
+        string ans;
+        while(!que.empty() ){
+            char cur=que.front();
+            que.pop();
+            ans.push_back(cur);
+            for(char &c:graph[cur]){
+                in[c]--;
+                if(in[c]==0)que.push(c);
+            }
+        }
+        return ans.size()==cnt?ans:"";
+    }
+};
+```
+# 270.最接近的二叉搜索树值
+```cpp
+class Solution {
+public:
+    int ans=0;
+    double min_dif=INT_MAX;
+    double target;
+    void dfs(TreeNode*root){
+        if(root==nullptr)return ;
+        double cur_dif=abs(root->val-target);
+        if(cur_dif<min_dif){
+            min_dif=cur_dif;
+            ans=root->val;
+        }else if(cur_dif==min_dif){
+            ans=min(ans,root->val);
+        }
+        dfs(root->left);
+        dfs(root->right);
+        return ;
+    }
+    int closestValue(TreeNode* root, double target1) {
+        target=target1;
+        dfs(root);
+        return ans;
+    }
+};
+```
+# 272.最接近的二叉搜索树值 II
+```cpp
+class Solution {
+public:
+    double target=0;
+    vector<int>arr;
+    void dfs(TreeNode*root){
+        if(root==nullptr)return ;
+        arr.push_back(root->val);
+        dfs(root->left);
+        dfs(root->right);
+        return ;
+    }
+    vector<int> closestKValues(TreeNode* root, double target1, int k) {
+        target=target1;
+        vector<int>ans;
+        dfs(root);
+        sort(arr.begin(),arr.end(),[&](const int&s1,const int&s2){
+            return abs(target-s1)<abs(target-s2);
+        });
+        for(int i=0;i<k;++i)ans.push_back(arr[i]);
+        return ans;
+    }
+};
+```
+# 285.二叉搜索树中的中序后继
+```cpp
+class Solution {
+public:
+    TreeNode* inorderSuccessor(TreeNode* root, TreeNode* p) {
+        stack<TreeNode*>st;
+        bool flag=false;
+        while(root||!st.empty() ){
+            while(root){
+                st.push(root);
+                root=root->left;
+            }
+            TreeNode*cur=st.top();
+            st.pop();
+            if(flag)return cur;
+            if(cur==p)flag=true;
+            root=cur->right;
+        }
+        return nullptr;
+    }
+};
+```
+# 297.二叉树的序列化与反序列化()
 ```cpp
 
 ```
-# 
+# 298.二叉树最长连续序列()
 ```cpp
 
 ```
-# 
+# 302.包含全部黑色像素的最小矩形()
 ```cpp
 
 ```
-# 
+# 310.最小高度树()
 ```cpp
 
+```
+# 314.二叉树的垂直遍历
+```cpp
+class Solution {
+public:
+    unordered_map<int,vector<int>>arr;
+    vector<vector<int>> verticalOrder(TreeNode* root) {
+        if(root==nullptr)return {};
+        queue<TreeNode*>que;
+        queue<int>flag;
+        que.push(root);
+        flag.push(0);
+        int minn=INT_MAX;
+        int maxx=INT_MIN;
+        while(!que.empty() ){
+            int size=que.size();
+            while(size--){
+                TreeNode*cur=que.front();
+                int cur_flag=flag.front();
+                minn=min(minn,cur_flag);
+                maxx=max(maxx,cur_flag);
+                que.pop();
+                flag.pop();
+                arr[cur_flag].push_back(cur->val);
+                if(cur->left){
+                    que.push(cur->left);
+                    flag.push(cur_flag-1);
+                }
+                if(cur->right){
+                    que.push(cur->right);
+                    flag.push(cur_flag+1);
+                }
+            }
+        } 
+        vector<vector<int>>ans;
+        for(int i=minn;i<=maxx;++i){
+            ans.push_back(arr[i]);
+        }
+        return ans;
+    }
+};
+```
+# 323.无向图中连通分量的数目
+```cpp
+class Solution {
+public:
+    int fa[2005];
+    int set_cnt=0;
+    void build(int n){
+        for(int i=0;i<n;++i)fa[i]=i;
+        set_cnt=n;
+    }
+    int find(int n){
+        queue<int>que;
+        while(n!=fa[n]){
+            que.push(n);
+            n=fa[n];
+        }
+        while(!que.empty() ){
+            fa[que.front()]=n;
+            que.pop();
+        }
+        return n;
+    }
+    void union_ele(int n1,int n2){
+        int fa1=find(n1);
+        int fa2=find(n2);
+        if(fa1==fa2)return ;
+        fa[fa1]=fa2;
+        set_cnt--;
+    }
+    int countComponents(int n, vector<vector<int>>& edges) {
+        //[0,n]
+        build(n);
+        for(auto &it:edges){
+            int n1=it[0];
+            int n2=it[1];
+            union_ele(n1,n2);
+        }
+        return set_cnt;
+    }
+};
+```
+# 329.矩阵中的最长递增路径
+```cpp
+class Solution {
+public:
+    int r=0;
+    int c=0;
+    int d[5]={0,-1,0,1,0};
+    int dp[205][205];
+    int dfs(vector<vector<int>>&matrix,int i,int j){
+        if(dp[i][j]!=0)return dp[i][j];
+        int ans=1;
+        for(int k=0;k<4;++k){
+            int x=i+d[k];
+            int y=j+d[k+1];
+            if(x>=0&&y>=0&&x<r&&y<c&&matrix[x][y]>matrix[i][j]){
+                ans=max(ans,1+dfs(matrix,x,y) );
+            }
+        }
+        dp[i][j]=ans;
+        return ans;
+    }
+    int longestIncreasingPath(vector<vector<int>>& matrix) {
+        r=matrix.size();
+        c=matrix[0].size();
+        int maxx=0;
+        for(int i=0;i<r;++i){
+            for(int j=0;j<c;++j){
+                maxx=max(maxx,dfs(matrix,i,j) );
+            }
+        }
+        return maxx;
+    }
+};
+```
+# 332.重新安排行程()
+```cpp
+
+```
+# 333.最大二叉搜索子树()
+```cpp
+
+```
+# 337.打家劫舍 III
+```cpp
+class Solution {
+public:
+    unordered_map<TreeNode*,int>mp;
+    int dfs(TreeNode*root){
+        if(root==nullptr)return 0;
+        if(mp[root]!=0)return mp[root]; 
+        int temp1=dfs(root->left)+dfs(root->right);
+        int temp2=root->val
+                +(root->left?dfs(root->left->left):0)
+                +(root->left?dfs(root->left->right):0)
+                +(root->right?dfs(root->right->left):0)
+                +(root->right?dfs(root->right->right):0);
+        int ans=max(temp1,temp2);
+        mp[root]=ans;
+        return ans;
+    }
+    int rob(TreeNode* root) {
+        mp[nullptr]=0;
+        return dfs(root);
+    }
+};
 ```
 # 
 ```cpp
