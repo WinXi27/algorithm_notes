@@ -1362,51 +1362,256 @@ public:
     }
 };
 ```
-# 
+# 472.连接词()
 ```cpp
 
 ```
-# 
+# 490.迷宫()
 ```cpp
 
 ```
-# 
+# 499.迷宫 III()
 ```cpp
 
 ```
-# 
+# 501.二叉搜索树中的众数
+```cpp
+class Solution {
+public:
+    unordered_map<int,int>cnt;
+    vector<int>ans;
+    int max_cnt=0;
+    void dfs(TreeNode*root){
+        if(root==nullptr)return ;
+        cnt[root->val]++;
+        if(cnt[root->val]==max_cnt){
+            ans.push_back(root->val);
+        }else if(cnt[root->val]>max_cnt){
+            ans.clear();
+            max_cnt=cnt[root->val];
+            ans.push_back(root->val);
+        }
+        dfs(root->left);
+        dfs(root->right);
+        return ;
+    }
+    vector<int> findMode(TreeNode* root) {
+        dfs(root);
+        return ans;
+    }
+};
+```
+# 508.出现次数最多的子树元素和
+```cpp
+class Solution {
+public:
+    int max_cnt=0;
+    vector<int>ans;
+    unordered_map<int,int>cnt;
+    int dfs(TreeNode*root){
+        if(root==nullptr)return 0;
+        int sum=root->val+dfs(root->left)+dfs(root->right);
+        cnt[sum]++;
+        if(cnt[sum]>max_cnt){
+            ans.clear();
+            ans.push_back(sum);
+            max_cnt=cnt[sum];
+        }else if(cnt[sum]==max_cnt){
+            ans.push_back(sum);
+        }
+        return sum;
+    }
+    vector<int> findFrequentTreeSum(TreeNode* root) {
+        dfs(root);     
+        return ans;    
+    }
+};
+```
+# 513.找树左下角的值
+```cpp
+class Solution {
+public:
+    int findBottomLeftValue(TreeNode* root) {
+        if(root==nullptr)return 0;
+        queue<TreeNode*>que;
+        que.push(root);
+        int level=0;
+        int ans=0;
+        while(!que.empty() ){
+            level++;
+            int size=que.size();
+            ans=que.front()->val;
+            while(size--){
+                TreeNode*cur=que.front();
+                que.pop();
+                if(cur->left)que.push(cur->left);
+                if(cur->right)que.push(cur->right);
+            }
+        }
+        return ans;
+    }
+};
+```
+# 515.在每个树行中找最大值
+```cpp
+class Solution {
+public:
+    vector<int> largestValues(TreeNode* root) {
+        if(root==nullptr)return {};
+        vector<int>ans;
+        queue<TreeNode*>que;
+        que.push(root);
+        while(!que.empty() ){
+            int size=que.size();
+            int maxx=INT_MIN;
+            while(size--){
+                TreeNode*cur=que.front();
+                que.pop();
+                maxx=max(maxx,cur->val);
+                if(cur->left)que.push(cur->left);
+                if(cur->right)que.push(cur->right);
+            }
+            ans.push_back(maxx);
+        }
+        return ans;
+    }
+};
+```
+# 530.二叉搜索树的最小绝对差
+```cpp
+class Solution {
+public:
+    int getMinimumDifference(TreeNode* root) {
+        if(root==nullptr)return 0;
+        queue<TreeNode*>que;
+        que.push(root);
+        vector<int>arr;
+        while(!que.empty() ){
+            int size=que.size();
+            while(size--){
+                TreeNode*cur=que.front();
+                que.pop();
+                arr.push_back(cur->val);
+                if(cur->left){
+                    que.push(cur->left);
+                }
+                if(cur->right){
+                    que.push(cur->right);
+                }
+            }
+        }
+        int minn=INT_MAX;
+        sort(arr.begin(),arr.end() );
+        for(int i=0;i<arr.size()-1;++i){
+            minn=min(minn,abs(arr[i]-arr[i+1]) );
+        }
+        return minn;
+    }
+};
+```
+# 543.二叉树的直径
+```cpp
+class Solution {
+public:
+    int maxx=0;
+    int dfs(TreeNode*root){
+        if(root==nullptr)return 0;
+        int left=dfs(root->left);
+        int right=dfs(root->right);
+        int ans=max(left,right)+1;
+        maxx=max(maxx,right+left+1-1);
+        return ans;
+    }
+    int diameterOfBinaryTree(TreeNode* root) {
+        dfs(root);
+        return maxx;
+    }
+};
+```
+# 545.二叉树的边界()
 ```cpp
 
 ```
-# 
+# 547.省份数量
 ```cpp
-
+class Solution {
+public:
+    int fa[205];
+    int set_cnt=0;
+    void build(int n){
+        for(int i=1;i<=n;++i)fa[i]=i;
+        set_cnt=n;
+    }
+    int find(int n){
+        queue<int>que;
+        while(fa[n]!=n){
+            que.push(n);
+            n=fa[n];
+        }
+        while(!que.empty() ){
+            fa[que.front()]=n;
+            que.pop();
+        }return n;
+    }
+    void union_ele(int n1,int n2){
+        int fa1=find(n1);
+        int fa2=find(n2);
+        if(fa1==fa2)return ;
+        fa[fa1]=fa2;
+        set_cnt--;
+    }
+    int findCircleNum(vector<vector<int>>& is) {
+        int n=is.size();
+        //[1,n]
+        build(n);
+        for(int i=0;i<n;++i){ 
+            for(int j=0;j<n;++j){ 
+                if(is[i][j])union_ele(i+1,j+1); 
+            } 
+        }   
+        return set_cnt;
+    } 
+};
 ```
-# 
+# 559.N 叉树的最大深度
+## bfs解法
 ```cpp
-
+class Solution {
+public:
+    int maxDepth(Node* root) {
+        if(root==nullptr)return 0;
+        queue<Node*>que;
+        que.push(root);
+        int level=0;
+        while(!que.empty() ){
+            level++;
+            int size=que.size();
+            while(size--){
+                Node*cur=que.front();
+                que.pop();
+                for(auto &it:cur->children){
+                    que.push(it);
+                }
+            }
+        }
+        return level;
+    }
+};
 ```
-# 
+## dfs解法
 ```cpp
-
-```
-# 
-```cpp
-
-```
-# 
-```cpp
-
-```
-# 
-```cpp
-
-```
-# 
-```cpp
-
-```
-# 
-```cpp
-
+class Solution {  
+public:  
+    int dfs(Node*root){
+        if(root==nullptr)return 0;
+        int ans=1;
+        for(auto &it:root->children){
+            ans=max(ans,1+dfs(it) );
+        }
+        return ans;
+    }  
+    int maxDepth(Node* root) { 
+        return dfs(root); 
+    } 
+}; 
 ```
