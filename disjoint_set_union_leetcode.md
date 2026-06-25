@@ -426,6 +426,7 @@ public:
 };
 ```
 # 827.最大人工岛
+## dfs解法
 ```cpp
 class Solution {
 public:
@@ -483,7 +484,81 @@ public:
     }
 };
 ```
-#
+## 并查集解法
+```cpp
+class Solution {
+public:
+    int fa[260000];
+    int sz[260000];
+    int find(int u) {
+    while (fa[u] != u) {
+        u=fa[fa[u]];
+    }
+    return u;
+}
+
+    void union_ele(int n1,int n2){
+        int fa1=find(n1);
+        int fa2=find(n2);
+        if(fa1==fa2)return ;
+        fa[fa1]=fa2;
+        sz[fa2]+=sz[fa1];
+        maxx=max(maxx,sz[fa2]);
+    }
+    int row=0;
+    int maxx=0;
+    int col=0;
+    int d[5]={0,-1,0,1,0};
+    int largestIsland(vector<vector<int>>& grid) {
+        row=grid.size();
+        col=grid[0].size();
+        for(int i=0;i<row;++i){
+            for(int j=0;j<col;++j){
+                if(grid[i][j]==1){
+                    fa[i*col+j+1]=i*col+j+1;
+                    sz[i*col+j+1]=1;
+                }
+            }
+        }
+        for(int i=0;i<row;++i){
+            for(int j=0;j<col;++j){
+                if(grid[i][j]==1){
+                    maxx=max(maxx,1);
+                    int temp=find(i*col+j+1);
+                    for(int k=0;k<4;++k){
+                        int x=i+d[k];
+                        int y=j+d[k+1];
+                        if(x>=0&&y>=0&&x<row&&y<col&&grid[x][y]==1&&find(x*col+y+1)!=temp ){
+                            union_ele(i*col+j+1,x*col+y+1);
+                        }
+                    }
+                }
+            }
+        }
+        //
+        for(int i=0;i<row;++i){
+            for(int j=0;j<col;++j){
+                if(grid[i][j]==0){
+                    unordered_set<int>st;
+                    int ans=1;
+                    st.insert(find(i*col+j+1) );
+                    for(int k=0;k<4;++k){
+                        int x=i+d[k];
+                        int y=j+d[k+1];
+                        if(x>=0&&y>=0&&x<row&&y<col&&grid[x][y]==1&&st.find(find(x*col+y+1) )==st.end() ){
+                            st.insert(find(x*col+y+1) );
+                            ans+=sz[find(x*col+y+1)];
+                        }
+                    }
+                    maxx=max(maxx,ans);
+                }
+            }
+        }
+        return maxx;
+    }
+};
+```
+# 
 ```cpp
 
 ```
