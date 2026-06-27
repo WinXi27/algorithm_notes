@@ -472,17 +472,123 @@ public:
     }
 };
 ```
-# 
+# 740. 删除并获得点数
+## dp 解法
 ```cpp
-
+class Solution {
+public:
+    int dp[10005];
+    int rob(vector<int>&nums){
+        int maxx=0;
+        for(int i=0;i<nums.size();++i){
+            if(i==0)dp[i]=nums[i];
+            else if(i==1)dp[i]=max(nums[i-1],nums[i]);
+            else dp[i]=max((i-2>=0?dp[i-2]:0)+nums[i],dp[i-1]);
+            maxx=max(maxx,dp[i]);
+        }
+        return maxx;
+    }
+    int deleteAndEarn(vector<int>& nums) {
+        int maxx=*max_element(nums.begin(),nums.end() );
+        //[maxx]
+        vector<int>sum(maxx+1,0);
+        for(int &it:nums){
+            sum[it]+=it;
+        }
+        return rob(sum);
+    }
+};
 ```
-# 
+## dp+状态压缩 解法
 ```cpp
-
+class Solution {
+public:
+    int rob(vector<int>&nums){
+        if(nums.size()==1)return nums[0];
+        if(nums.size()==2)return max(nums[0],nums[1]);
+        int prepre=nums[0];
+        int pre=nums[1];
+        for(int i=2;i<nums.size();++i){
+            int cur=max(prepre+nums[i],pre);
+            prepre=pre;
+            pre=cur;
+        }return pre;
+    }
+    int deleteAndEarn(vector<int>& nums) {
+        int maxx=*max_element(nums.begin(),nums.end() );
+        vector<int>sum(maxx+1);//[1,maxx]
+        for(int &it:nums)sum[it]+=it;
+        return rob(sum);
+    }
+};
 ```
-# 
+# 64. 最小路径和
+## dp 解法
 ```cpp
-
+class Solution {
+public:
+    int r=0;
+    int c=0;
+    int dp[205][205];
+    int minPathSum(vector<vector<int>>& grid) {
+        r=grid.size();
+        c=grid[0].size();
+        for(int i=0;i<r;++i){
+            for(int j=0;j<c;++j){
+                if(i==0&&j==0)dp[i][j]=grid[i][j];
+                else dp[i][j]=min((i-1>=0?dp[i-1][j]:INT_MAX-grid[i][j])+grid[i][j],(j-1>=0?dp[i][j-1]:INT_MAX-grid[i][j])+grid[i][j]);
+            }
+        }
+        return dp[r-1][c-1];
+    }
+};
+```
+## dp+状态压缩 解法
+```cpp
+class Solution {
+public:
+    int dp[205];
+    int minPathSum(vector<vector<int>>& grid) {
+        for (int j = 0; j < grid[0].size(); ++j) {
+            dp[j]=(j-1>=0?dp[j-1]:0)+grid[0][j];
+        }
+        for (int i = 1; i < grid.size(); ++i) {
+            for (int j = 0; j < grid[0].size(); ++j) {
+                dp[j] = min(dp[j], (j-1>=0?dp[j - 1]:INT_MAX) ) + grid[i][j];
+            }
+        }
+        return dp[grid[0].size() - 1];
+    }
+};
+``
+# 63. 不同路径 II
+```cpp
+class Solution {
+public:
+    int r=0;
+    int c=0;
+    int dp[105][105];
+    int uniquePathsWithObstacles(vector<vector<int>>& grid) {
+        if(grid.empty() )return 0;
+        if(grid.back().back()==1||grid[0][0]==1)return 0;
+        r=grid.size();
+        c=grid[0].size();
+        for(int i=0;i<r;++i){
+            for(int j=0;j<c;++j){
+                if(i==0&&j==0){
+                    dp[i][j]=1;
+                    continue;
+                }
+                if(grid[i][j]==1){
+                    dp[i][j]=0;
+                }else{
+                    dp[i][j]=(i-1>=0?dp[i-1][j]:0)+(j-1>=0?dp[i][j-1]:0);
+                }
+            }
+        }
+        return dp[r-1][c-1];
+    }
+};
 ```
 # 
 ```cpp
