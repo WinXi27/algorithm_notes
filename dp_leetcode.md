@@ -1,4 +1,4 @@
-# 动态规划 专题
+# leetcode动态规划 专题
 保证代码全部AC
 # 5. 最长回文子串
 ## dp 解法
@@ -590,13 +590,120 @@ public:
     }
 };
 ```
-# 
+# LCR 102. 目标和
+## dfs 解法(数据量小,可AC)
 ```cpp
-
+//第一种
+class Solution {
+public:
+    int cnt=0;
+    void dfs(vector<int>&nums,int target,int sum,int i){
+        if(i==nums.size() ){
+            if(target==sum)cnt++;
+            return ;
+        }
+        dfs(nums,target,sum+nums[i],i+1);
+        dfs(nums,target,sum-nums[i],i+1);
+        return ;
+    }
+    int findTargetSumWays(vector<int>& nums, int target) {
+       
+        dfs(nums,target,0,0);
+        return cnt;
+    }
+};
+// 第二种
+class Solution {
+public:
+    int dfs(vector<int>&nums,int target,int sum,int i){
+        if(i==nums.size() ){
+            return target==sum?1:0;
+        }
+        return dfs(nums,target,sum+nums[i],i+1)+dfs(nums,target,sum-nums[i],i+1);
+    }
+    int findTargetSumWays(vector<int>& nums, int target) {
+        return dfs(nums,target,0,0);
+    }
+};
 ```
-# 
+## dfs+缓存表 解法1
 ```cpp
-
+class Solution {
+public:
+    unordered_map<int,unordered_map<int,int>>dp;
+    //dp[i][sum]
+    int dfs(vector<int>&nums,int target,int sum,int i){
+        if(dp.find(i)!=dp.end()&&dp[i].find(sum)!=dp[i].end() ){
+            return dp[i][sum];
+        }
+        if(i==nums.size() ){
+            return target==sum?1:0;
+        }
+        int ans=dfs(nums,target,sum+nums[i],i+1)+dfs(nums,target,sum-nums[i],i+1);
+        dp[i][sum]=ans;
+        return ans;
+    }
+    int findTargetSumWays(vector<int>& nums, int target) {
+        return dfs(nums,target,0,0);
+    }
+};
+```
+## dfs+缓存表 解法2
+```cpp
+class Solution {
+public:
+    int dp[25][2006];
+            int s=0;
+    int dfs(vector<int>&nums,int target,int sum,int i){
+        if(i==nums.size() ){
+            return target==sum?1:0;
+        }
+        if(dp[i][s+sum]!=-1)return dp[i][sum+s];
+        int ans=dfs(nums,target,sum+nums[i],i+1)+dfs(nums,target,sum-nums[i],i+1);
+        dp[i][sum+s]=ans;
+        return ans;
+    }
+    int findTargetSumWays(vector<int>& nums, int target) {
+        for(int &it:nums)s+=it;
+        if(target<-s||target>s)return 0;
+        memset(dp,-1,sizeof(dp) );
+        //[-s,+s]
+        //dp[i][-s~+s]=dp[i][0~2*s]
+        //dp[i][sum]=dp[i][sum+s];
+        return dfs(nums,target,0,0);
+    }
+};
+```
+## 01背包 解法
+```cpp
+class Solution {
+public:
+    int dp[25][10005];
+    int sub(vector<int>&nums,int target){
+        //dp[i][j]是前i个数据,构成的累加和为j的数量
+        //dp[i][j]=dp[i-1][j]+(j-1numss[i-1]>=0?dp[i-1][j-nums[i-1]]:0);
+        dp[0][0]=1;
+        for(int i=1;i<=nums.size();++i){
+            for(int j=0;j<=target;++j){
+                dp[i][j]=dp[i-1][j]+(j-nums[i-1]>=0?dp[i-1][j-nums[i-1]]:0);
+            }
+        }
+        return dp[nums.size()][target];
+    }
+    int findTargetSumWays(vector<int>& nums, int target) {
+        //sumA={};
+        //sumB={};
+        //sumA-sumB==target;
+        //2*sumA=target+sumA+sumB;
+        //sumA=(target+s)/2;
+        int s=0;
+        for(int &it:nums)s+=abs(it);
+        if(target<-s||target>s)return 0;
+        if( (s%2)!=(target%2) )return 0;
+        target=(target+s)/2;
+        return sub(nums,target);
+    }
+};
 ```
 # 
 ```cpp
