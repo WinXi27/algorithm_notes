@@ -239,53 +239,146 @@ public:
             idx[arr[i]].push_back(i);
         }
     }
-    int lower_bound01(vector<int>&nums,int target){
+    int fun01(vector<int>&nums,int target){
         int l=0;
         int r=nums.size()-1;
         while(l<=r){
+            //小于 l r 大于等于
             int mid=l+(r-l)/2;
             if(nums[mid]<target)l=mid+1;
             else r=mid-1;
         }
-        //小于 l r 大于等于
         return l;
     }
-    int upper_bound01(vector<int>&nums,int target){
+    int fun02(vector<int>&nums,int target){
         int l=0;
         int r=nums.size()-1;
         while(l<=r){
+            //小于等于 l r 大于
             int mid=l+(r-l)/2;
             if(nums[mid]<=target)l=mid+1;
             else r=mid-1;
         }
-        //小于等于 l r 大于
         return r;
     }
     int query(int left, int right, int value) {
-        if(idx.count(value)==0)return 0;
-        int idx1=lower_bound01(idx[value],left);//大于=left
-        int idx2=upper_bound01(idx[value],right);//小于=right
-        return idx2-idx1+1;
+        if(idx.find(value)==idx.end() )return 0;
+        vector<int>&nums=idx[value];
+        int begin=fun01(nums,left);//大于等于
+        int end=fun02(nums,right);//小于等于
+        return end-begin+1;
+    }
+};
+```
+# 3488. 距离最小相等元素查询
+```cpp
+class Solution {
+public:
+    unordered_map<int,vector<int>>idx;
+    vector<int> solveQueries(vector<int>& nums, vector<int>& queries) { 
+        for(int i=0;i<nums.size();++i){ 
+            idx[nums[i]].push_back(i); 
+        }  
+        for(auto &[_,pos]:idx){ 
+            int temp=pos[0]; 
+            pos.insert(pos.begin(),pos.back()-nums.size() ); 
+            pos.push_back(temp+nums.size() ); 
+        } 
+        vector<int>ans(queries.size(),0); 
+        for(int i=0;i<queries.size();++i){ 
+            int target=nums[queries[i]]; 
+            if(idx.find(target)==idx.end()||idx[target].size()==3){
+                ans[i]=-1;
+                continue;
+            }
+            vector<int>&nums=idx[target]; 
+            int begin=(int)(lower_bound(nums.begin(),nums.end(),queries[i])-nums.begin() );
+            //  第一个等于的数据 
+            ans[i]=min( queries[i]-nums[begin-1],nums[begin+1]-queries[i] );
+        }   
+        return ans;   
+    }
+};
+```
+# 2563. 统计公平数对的数目
+```cpp
+class Solution {
+public:
+#define ll  long long 
+    int fun01(vector<int>&nums,int begin,int end,int target){
+        //大于等于target的数据下标
+        int l=begin;
+        int r=end;
+        while(l<=r){
+            //小于 l r 大于=
+            int mid=l+(r-l)/2;
+            if(nums[mid]<target)l=mid+1;
+            else r=mid-1;
+        }
+        return l;
+    }
+    int fun02(vector<int>&nums,int begin,int end,int target){
+        //小于等于target的数据下标
+        int l=begin;
+        int r=end;
+        while(l<=r){
+            //小于= l r 大于
+            int mid=l+(r-l)/2;
+            if(nums[mid]<=target)l=mid+1;
+            else r=mid-1;
+        }
+        return r;
+    }
+    long long countFairPairs(vector<int>& nums, int lower, int upper) {
+        ll cnt=0;
+        sort(nums.begin(),nums.end() );
+        for(int i=0;i<nums.size();++i){
+            //[i+1,nums.size()-1]
+            int temp1=lower-nums[i];
+            int temp2=upper-nums[i];
+            cnt+=(fun02(nums,i+1,nums.size()-1,temp2)-fun01(nums,i+1,nums.size()-1,temp1)+1 );
+        }
+        return cnt;
+    }
+};
+```
+# 1146. 快照数组
+```cpp
+class SnapshotArray {
+public:
+    unordered_map<int,vector<pair<int,int>> >mp;
+    int cur_snap_id=0;
+    SnapshotArray(int length) {
+        for(int i=0;i<length;++i)mp[i].push_back({cur_snap_id,0});
+    }
+    void set(int index, int val) {
+        mp[index].push_back({cur_snap_id,val});
+    }
+    int snap() {
+        cur_snap_id++;
+        return cur_snap_id-1;
+    }
+    int get(int index, int snap_id) {
+        vector<pair<int,int>>&nums=mp[index];
+        int l=0;
+        int r=nums.size()-1;
+        while(l<=r){
+            //小于等于 l r 大于
+            int mid=l+(r-l)/2;
+            if(nums[mid].first<=snap_id)l=mid+1;
+            else r=mid-1;
+        }
+        return nums[r].second;
     }
 };
 
 /**
- * Your RangeFreqQuery object will be instantiated and called as such:
- * RangeFreqQuery* obj = new RangeFreqQuery(arr);
- * int param_1 = obj->query(left,right,value);
+ * Your SnapshotArray object will be instantiated and called as such:
+ * SnapshotArray* obj = new SnapshotArray(length);
+ * obj->set(index,val);
+ * int param_2 = obj->snap();
+ * int param_3 = obj->get(index,snap_id);
  */
-```
-# 
-```cpp
-
-```
-# 
-```cpp
-
-```
-# 
-```cpp
-
 ```
 # 
 ```cpp

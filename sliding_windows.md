@@ -303,9 +303,30 @@ public:
     }
 };
 ```
-# 
+# 3679. 使库存平衡的最少丢弃次数
 ```cpp
-
+class Solution {
+public:
+    int minArrivalsToDiscard(vector<int>& arrivals, int w, int m) {
+        unordered_map<int,int>cnt;
+        unordered_set<int>is_drop;
+        int drop=0;
+        for(int r=0;r<arrivals.size();++r){
+            if(cnt[arrivals[r]]==m){
+                drop++;
+                is_drop.insert(r);
+            }else cnt[arrivals[r]]++;
+            int l=r-w+1;
+            if(l<0)continue;
+            if(is_drop.find(l)!=is_drop.end() )continue;
+            else{
+                cnt[arrivals[l]]--;
+                if(cnt[arrivals[l]]==0)cnt.erase(arrivals[l]);
+            } 
+        }
+        return drop;
+    }
+};
 ```
 # 
 ```cpp
