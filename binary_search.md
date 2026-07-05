@@ -98,6 +98,7 @@ public:
 ```
 # 下面是进阶题目
 # 1385. 两个数组间的距离值
+## 常规 解法
 ```cpp
 class Solution {
 public:
@@ -129,6 +130,26 @@ public:
             }
         }
         return ans;
+    }
+};
+```
+## 添加头尾数据 解法
+```cpp
+class Solution {
+public:
+    int findTheDistanceValue(vector<int>& arr1, vector<int>& arr2, int d) {
+        int cnt=0;
+        int maxx=INT_MIN;
+        int minn=INT_MAX;
+        for(int &it:arr1)maxx=max(maxx,it),minn=min(minn,it);
+        sort(arr2.begin(),arr2.end() );
+        arr2.insert(arr2.begin(),minn-d-1);
+        arr2.push_back(maxx+d+1);
+        for(int i=0;i<arr1.size();++i){
+            int idx=lower_bound(arr2.begin(),arr2.end(),arr1[i])-arr2.begin();
+            if(arr2[idx]-arr1[i]>d&&arr1[i]-arr2[idx-1]>d)cnt++;
+        }
+        return cnt;
     }
 };
 ```
@@ -371,14 +392,109 @@ public:
         return nums[r].second;
     }
 };
+```
+# 981. 基于时间的键值存储
+```cpp
+class TimeMap {
+public:
+    unordered_map<string,vector<pair<string,int>>>idx;
+    TimeMap() {
+    }
+    void set(string key, string value, int timestamp) {
+        idx[key].push_back({value,timestamp});
+    }
+    string get(string key, int timestamp) {
+        vector<pair<string,int>>&nums=idx[key];
+        int l=0;
+        int r=nums.size()-1;
+        while(l<=r){
+            //小于等于 l r 大于
+            int mid=l+(r-l)/2;
+            if(nums[mid].second<=timestamp)
+                l=mid+1;
+            else r=mid-1; 
+        }
+        return r!=-1?nums[r].first:"";
+    }
+};
+```
+# 658. 找到 K 个最接近的元素
+```cpp
+class Solution {
+public:
+    vector<int> findClosestElements(vector<int>& nums, int k, int x) {
+        sort(nums.begin(),nums.end() );
+        int r=upper_bound(nums.begin(),nums.end(),x)-nums.begin() ;//大于等于
+        if(r==0){
+            return vector<int>(nums.begin(),nums.begin()+k);
+        }else if(r==nums.size() ){
+            return vector<int>(nums.begin()+(int)nums.size()-k,nums.end() );
+        }else{
+            int l=r-1;
+            vector<int>ans;
+            while(l>=0&&r<nums.size()&&ans.size()<k ){
+                if(x-nums[l]<=nums[r]-x)ans.push_back(nums[l--]);
+                else ans.push_back(nums[r++]);
+            } 
+            while(ans.size()<k&&l>=0){
+                ans.push_back(nums[l--]);
+            }
+            while(ans.size()<k&&r<nums.size() ){
+                ans.push_back(nums[r++]);
+            }
+            sort(ans.begin(),ans.end() );
+            return ans;
+        }
+        return {};
+    }
+};
+```
+# 1818. 绝对差值和
+```cpp
+class Solution {
+public:
+#define ll long long 
+const ll mod=1e9+7;
+    int minAbsoluteSumDiff(vector<int>& nums1, vector<int>& nums2) {
+        if(nums1==nums2)return 0;
+        vector<int>nums=nums1;
+        sort(nums.begin(),nums.end() );
+        ll sum=0;
+        for(int i=0;i<nums1.size();++i)
+            sum=(sum+llabs(nums1[i]-nums2[i])+mod)%mod;
+        ll maxx=0;
+        for(int i=0;i<nums.size();++i){
+            int r=lower_bound(nums.begin(),nums.end(),nums2[i])-nums.begin();
+            ll dif=abs(nums1[i]-nums2[i]);
+            if(r==0){
+                maxx=max(maxx,dif-(nums[r]-nums2[i]) );
+            }else if(r==nums.size() ){
+                maxx=max(maxx,dif-(nums2[i]-nums[r-1]) );
+            }else maxx=max({maxx,dif-nums2[i]+nums[r-1],dif-nums[r]+nums2[i] });
+        }
+        return (sum-maxx+mod)%mod;
+    }
+};
+```
+# 
+```cpp
 
-/**
- * Your SnapshotArray object will be instantiated and called as such:
- * SnapshotArray* obj = new SnapshotArray(length);
- * obj->set(index,val);
- * int param_2 = obj->snap();
- * int param_3 = obj->get(index,snap_id);
- */
+```
+# 
+```cpp
+
+```
+# 
+```cpp
+
+```
+# 
+```cpp
+
+```
+# 
+```cpp
+
 ```
 # 
 ```cpp

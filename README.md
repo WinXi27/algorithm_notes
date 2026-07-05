@@ -8,7 +8,9 @@ leetcode的bfs专题题目解法
 排序算法 
 # disjoint_set_union.md  
 并查集 
-# sliding_windows 
-灵神题单_滑动窗口.md
+# sliding_windows.md 
+灵神题单_滑动窗口
+# binary_search.md
+二分算法
 # test.cpp
 C++运行测试文件
