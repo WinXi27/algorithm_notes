@@ -1,3 +1,6 @@
+# 分享丨【算法题单】滑动窗口与双指针（定长/不定长/单序列/双序列/三指针/分组循环）
+
+# 下面是____定长滑动窗口___1.1基础
 # 1456. 定长子串中元音的最大数目
 ```cpp
 class Solution {
@@ -268,27 +271,135 @@ public:
     }
 };
 ```
-# 
+# 下面是____定长滑动窗口___1.2进阶
+# 1052. 爱生气的书店老板
 ```cpp
-
+class Solution {
+public:
+    int maxSatisfied(vector<int>& customers, vector<int>& grumpy, int minutes) {
+        int sum=0;
+        int maxx=0;
+        for(int i=0;i<customers.size();++i)
+            if(grumpy[i]==0)
+                sum+=customers[i];
+        int l=0;
+        maxx=sum;
+        for(int r=0;r<customers.size();++r){
+            if(grumpy[r]==1)sum+=customers[r];
+            if(r-l+1<minutes)continue;
+            maxx=max(maxx,sum);
+            if(grumpy[l]==1)sum-=customers[l];
+            l++;
+        }
+        return maxx;
+    }
+};
 ```
-# 
+# 3679. 使库存平衡的最少丢弃次数
 ```cpp
-
+class Solution {
+public:
+    int minArrivalsToDiscard(vector<int>& arrivals, int w, int m) {
+        int l=0;
+        int drop_cnt=0;
+        unordered_map<int,int>mp;
+        unordered_map<int,bool>is_drop;
+        for(int r=0;r<arrivals.size();++r){
+            if(mp[arrivals[r]]==m){
+                is_drop[r]=true;
+                drop_cnt++;
+            }else mp[arrivals[r]]++;
+            if(r-l+1<w)continue;
+            if(is_drop[l]==false)mp[arrivals[l]]--;
+            l++;
+        }
+        return drop_cnt;
+    }
+};
 ```
-# 
+# 3439. 重新安排会议得到最多空余时间 I
 ```cpp
-
+class Solution {
+public:
+    int maxFreeTime(int eventTime, int k, vector<int>& startTime, vector<int>& endTime) {
+        vector<int>nums;
+        nums.push_back(startTime[0]-0);
+        for(int i=0;i+1<startTime.size();++i){
+            nums.push_back(startTime[i+1]-endTime[i]);
+        }
+        nums.push_back(eventTime-endTime.back() );
+        int len=k+1;
+        int l=0;
+        int maxx=0;
+        int sum=0;
+        for(int r=0;r<nums.size();++r){
+            sum+=nums[r];
+            if(r-l+1<k+1)continue;
+            maxx=max(maxx,sum);
+            sum-=nums[l++];
+        }
+        return maxx;
+    }
+};
 ```
-# 
+# 3694. 删除子字符串后不同的终点
 ```cpp
-
+class Solution {
+public:
+    int distinctPoints(string s, int k) {
+        int x=0;
+        int y=0;
+        int l=0;
+        unordered_map<string,int>mp;
+        for(int r=0;r<s.size();++r){
+            if(s[r]=='U')y--;
+            else if(s[r]=='D')y++;
+            else if(s[r]=='L')x++;
+            else if(s[r]=='R')x--;
+            if(r-l+1<k)continue;
+            mp[to_string(x)+","+to_string(y)]++;
+            if(s[l]=='U')y++;
+            else if(s[l]=='D')y--;
+            else if(s[l]=='L')x--;
+            else if(s[l]=='R')x++;
+            l++;
+        }
+        return mp.size();
+    }
+};
 ```
-# 
+# 2134. 最少交换次数来组合所有的 1 II
 ```cpp
-
+class Solution {
+public:
+    int minSwaps(vector<int>& nums) {
+        int minn=nums.size();
+        int l=0;
+        int len=0;
+        int cnt0=0;
+        for(int &it:nums)if(it==1)len++;
+        for(int r=0;r<nums.size();++r){
+            if(nums[r]==0)cnt0++;
+            if(r-l+1<len)continue;
+            minn=min(minn,cnt0);
+            if(nums[l]==0)cnt0--;
+            l++;
+        }
+        len=nums.size()-len;
+        l=0;
+        int cnt1=0;
+        for(int r=0;r<nums.size();++r){
+            if(nums[r]==1)cnt1++;
+            if(r-l+1<len)continue;
+            minn=min(minn,cnt1);
+            if(nums[l]==1)cnt1--;
+            l++;
+        }
+        return minn;
+    }
+};
 ```
-# 
+# 1652. 拆炸弹
 ```cpp
 
 ```
