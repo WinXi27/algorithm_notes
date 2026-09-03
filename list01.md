@@ -1,3 +1,6 @@
+# 我的做题状态:
+1.1基础完全掌握
+1.2不完全掌握,需要反复写,思考
 # 分享丨【算法题单】滑动窗口与双指针（定长/不定长/单序列/双序列/三指针/分组循环）
 
 # 下面是____定长滑动窗口___1.1基础
@@ -271,6 +274,7 @@ public:
     }
 };
 ```
+
 # 下面是____定长滑动窗口___1.2进阶
 # 1052. 爱生气的书店老板
 ```cpp
@@ -401,11 +405,48 @@ public:
 ```
 # 1652. 拆炸弹
 ```cpp
-
+class Solution {
+public:
+    vector<int> decrypt(vector<int>& code, int k) {
+        vector<int>ans(code.size(),0);
+        if(k==0)return ans;
+        int idx=k>0?code.size()-1:-k;
+        int l=0;
+        int sum=0;
+        for(int r=0;l<code.size();++r){
+            sum+=code[r%code.size()];
+            if(r-l+1<abs(k) )continue;
+            ans[idx%code.size()]=sum;
+            idx++;
+            sum-=code[l++];
+        }
+        return ans;
+    }
+};
 ```
-# 
+# 1461. 检查一个字符串是否包含所有长度为 K 的二进制子串
 ```cpp
-
+class Solution {
+public:
+    bool hasAllCodes(string s, int k) {
+        if(s.size()<k)return false;
+        int cnt=0;
+        vector<bool>mp(1<<k,false);
+        int l=0;
+        int mask=(1<<(k-1) )-1;
+        int str=0;
+        for(int r=0;r<s.size();++r){
+            str=( (str&mask)<<1)+(s[r]-'0');
+            if(r-l+1<k)continue;
+            if(mp[str]==false){
+                cnt++;
+                mp[str]=true;
+            }
+            if(cnt==(1<<k) )return true;
+        }
+        return cnt==(1<<k);
+    }
+};
 ```
 # 
 ```cpp
